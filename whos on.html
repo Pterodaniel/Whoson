@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Who's Logged In</title>
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 2rem;
+        }
+
+        .current-user {
+            background-color: #e6f7ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .current-user h2 {
+    font-weight: bold;
+    font-size: 1.75rem;
+}
+
+        .time-display {
+            font-size: 1.25rem;
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .time-display.pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .queue {
+            margin-bottom: 20px;
+        }
+
+        .queue h3 {
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 1.25rem;
+        }
+
+        .queue-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f9f9f9;
+    padding: 15px; /* Increase padding */
+    border-radius: 10px;
+    margin-bottom: 15px; /* Increase margin */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+    border: 1px solid #ddd; /* Add subtle border */
+}
+
+        .queue-item span {
+    font-size: 1.1rem;
+}
+
+       .priority-green {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+}
+
+.priority-yellow {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+}
+
+.priority-red {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+}
+
+        .request-section {
+            background-color: #e6ffe6;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .request-section h3 {
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 1.25rem;
+        }
+
+        .priority-select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .request-button {
+            width: 100%;
+            padding: 15px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .request-button:hover {
+            background-color: #218838;
+        }
+
+        .login-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .login-section input[type="text"] {
+            width: 70%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .login-section button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .login-section button:hover {
+            background-color: #0069d9;
+        }
+
+        .add-time-button {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #ffc107;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        .add-time-button:hover {
+            background-color: #e0a800;
+        }
+
+        .leave-queue-button {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .leave-queue-button:hover {
+            background-color: darkred;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            .current-user h2,
+            .queue h3,
+            .request-section h3 {
+                font-size: 1.25rem;
+            }
+
+            .time-display {
+                font-size: 1rem;
+            }
+			.queue-item:hover {
+    transform: scale(1.02);
+    transition: transform 0.2s ease;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15); /* Enhance shadow on hover */
+}
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- Login Section -->
+        <div class="login-section">
+            <input type="text" id="usernameInput" placeholder="Enter your username">
+            <button onclick="login()">Login</button>
+        </div>
+
+        <h1>Who's Logged In?</h1>
+
+      <!-- Currently Logged In Section -->
+<div class="current-user" id="currentUserSection">
+    <h2>Currently Logged In:</h2>
+    <p id="currentUser">No one is currently logged in</p>
+    <p>Time Remaining: <span id="timeRemaining" class="time-display">00:00</span></p>
+    <p>Clock-In Time: <span id="clockInTime">--:--</span></p>
+    <p>Clock-Out Time: <span id="clockOutTime">--:--</span></p>
+    <button class="add-time-button" onclick="addTime()">Add 5 Minutes</button>
+    <!-- Log Out Early Button -->
+    <button class="add-time-button" onclick="logoutEarly()">Log Out Early</button>
+</div>
+
+        <!-- Queue Section -->
+        <div class="queue">
+            <h3>Waiting Queue:</h3>
+            <div id="queueList">
+                <!-- Queue items will be dynamically added here -->
+            </div>
+        </div>
+
+      <!-- Request to be Next Section -->
+<div class="request-section">
+    <h3>Want to be next?</h3>
+    <select id="priority" class="priority-select">
+        <option value="low" selected>I can wait</option>
+        <option value="medium">I need it soon</option>
+        <option value="high">URGENT!</option>
+    </select>
+    <button class="request-button" onclick="requestNext()">Request to be Next</button>
+   
+  
+</div>
+
+    <script>
+        let currentUser = null;
+        let queue = [];
+        let timerInterval;
+        let time = 20 * 60; // 20 minutes in seconds
+
+        function login() {
+            const username = document.getElementById('usernameInput').value.trim();
+            if (username === "") {
+                alert("Please enter a username");
+                return;
+            }
+            if (!currentUser) {
+                setCurrentUser(username);
+            } else {
+                queue.push({
+                    name: username,
+                    priority: 'low'
+                });
+                updateQueueDisplay();
+            }
+            document.getElementById('usernameInput').value = '';
+        }
+
+        function setCurrentUser(username) {
+            currentUser = username;
+            time = 20 * 60; // reset the time
+            document.getElementById('currentUser').textContent = username;
+            document.getElementById('clockInTime').textContent = new Date().toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            updateClockOutTime();
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (time > 0) {
+                    time--;
+                    updateTimeDisplay();
+                    updateClockOutTime();
+                } else {
+                    clearInterval(timerInterval);
+                    alert('Time is up! Next user can log in.');
+                    if (queue.length > 0) {
+                        const nextUser = queue.shift();
+                        setCurrentUser(nextUser.name);
+                    } else {
+                        currentUser = null;
+                        document.getElementById('currentUser').textContent = 'No one is currently logged in';
+                        document.getElementById('timeRemaining').textContent = '00:00';
+                        document.getElementById('clockInTime').textContent = '--:--';
+                        document.getElementById('clockOutTime').textContent = '--:--';
+                    }
+                    updateQueueDisplay();
+                }
+            }, 1000);
+        }
+
+        function updateTimeDisplay() {
+            const minutes = Math.floor(time / 60);
+            const seconds = time % 60;
+            document.getElementById('timeRemaining').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+		    function updateClockOutTime() {
+       const clockOutTime = new Date(new Date().getTime() + time * 1000).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+});
+        document.getElementById("clockOutTime").textContent = clockOutTime;
+    }
+
+   function requestNext() {
+        const priority = document.getElementById('priority').value;
+        const username = prompt("Enter your username to request:");
+        if (!username) return;
+        queue.push({
+            name: username,
+            priority: priority
+        });
+        queue.sort((a, b) => {
+            const priorities = { low: 3, medium: 2, high: 1 };
+            return priorities[a.priority] - priorities[b.priority];
+        });
+        updateQueueDisplay();
+    }function updateQueueDisplay() {
+    const queueList = document.getElementById('queueList');
+    queueList.innerHTML = '';
+    queue.forEach((user, index) => {
+        const position = index + 1;
+        const priorityClass = user.priority === 'high' ? 'priority-red' : user.priority === 'medium' ? 'priority-yellow' : 'priority-green';
+        const priorityText = user.priority === 'high' ? 'URGENT!' : user.priority === 'medium' ? 'I need it soon' : 'I can wait';
+        const queueItem = `
+            <div class="queue-item" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background-color: ${priorityClass === 'priority-red' ? '#f8d7da' : priorityClass === 'priority-yellow' ? '#fff3cd' : '#d4edda'};">
+                <span style="flex: 0 0 30px;">${position}.</span>
+                <span>${user.name}</span>
+                <span class="${priorityClass}" style="flex: 1; text-align: center;">${priorityText}</span>
+                <button onclick="leaveQueue('${user.name}')" class="leave-queue-button" style="background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; flex: 0 0 auto; margin-left: 10px;">
+                    <i class="fas fa-times"></i> Leave Q
+                </button>
+            </div>
+        `;
+        queueList.innerHTML += queueItem;
+    });
+}
+
+window.addTime = function() {
+    time += 5 * 60; // Add 5 minutes to the current time
+    updateTimeDisplay();
+    updateClockOutTime();
+}
+
+function leaveQueue(username) {
+    queue = queue.filter(user => user.name !== username);
+    updateQueueDisplay();
+}
+
+window.logoutEarly = function() {
+    clearInterval(timerInterval);
+    alert('You have logged out early.');
+
+    // Clear the current user data
+    currentUser = null;
+    document.getElementById('currentUser').textContent = 'No one is currently logged in';
+    document.getElementById('timeRemaining').textContent = '00:00';
+    document.getElementById('clockInTime').textContent = '--:--';
+    document.getElementById('clockOutTime').textContent = '--:--';
+
+    // Check if there's another user in the queue and set them as the new current user
+    if (queue.length > 0) {
+        const nextUser = queue.shift();
+        setCurrentUser(nextUser.name);
+    }
+
+    updateQueueDisplay();
+}
+		</script>
+		</body>
+		</html>
